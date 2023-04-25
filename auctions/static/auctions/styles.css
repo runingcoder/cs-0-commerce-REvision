@@ -1,6 +1,42 @@
 .registerHello {
     color: purple;
 }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #8b4848;
+    color: white;
+    padding: 10px;
+}
+
+.navbar-left {
+    display: inline-block;
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.status {
+    margin-right: 20px;
+}
+
+.nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-right: 10px;
+}
+
+.nav-link {
+    color: white;
+}
 body{
     margin: 30px;
     padding: 20px;
@@ -8,11 +44,7 @@ body{
 .status{
     text-align: center;
 }
-.nav-link{
 
-    font-size: 20px;
-    font-weight: 500;
-}
 
 
 .listing{
@@ -64,7 +96,9 @@ a {
 color: black;
 text-decoration: none;
 }
-
+.nav a:hover{
+    color: black;
+}
 a:hover {
 text-decoration: underline;
 }
@@ -75,9 +109,19 @@ margin-top: 4em;
 color: #3b3636;
 margin-top: 2em;
 }
-.wrapper{
-    margin: 20px;
-}
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    color: #333;
+    font-size: 16px;
+  }
+  
 .listing-watchlist{
     margin-top: 2em;    
     display: flex;
@@ -128,14 +172,18 @@ margin-top: 2em;
   
   .comment-form input[type=text],
   .comment-form textarea {
-      width: 100%;
-      padding: 12px 20px;
-      margin: 8px 0;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+    resize: none;
   }
+  
   
   .comment-form input[type=submit] {
       background-color: #4CAF50;
@@ -146,19 +194,23 @@ margin-top: 2em;
       cursor: pointer;
   }
   
+  .comment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
   .comment {
-      background-color: #f9f9f9;
-      padding: 20px;
-      margin-bottom: 10px;
+    margin-bottom: 20px;
   }
   
   .comment-author {
-      font-weight: bold;
-      margin: 0;
+    font-weight: bold;
+    margin-bottom: 5px;
   }
   
   .comment-content {
-      margin: 0;
+    margin-left: 20px;
   }
   
   
@@ -173,4 +225,15 @@ margin-top: 2em;
     border-color: #f5c6cb !important;;
     color: #721c24  !important;
   }
+  .formClass{
+    margin-left:-20px;
+  }
+  .btnandWinner{
+    display: flex;
+    justify-content: space-between;
+  }
+    .winner{
+        margin-left: 20px;
+        margin-top: 20px;
+    }
   

@@ -44,11 +44,17 @@
                       </button>
                       </form>   
                         {% else %}
-                        <button type="submit" name="watchlist" id="watchlist-btn" class="watchlist-btn">
-                            <span id="watchlist-status">
-                                <span style="color: green;">Listing Closed!</span>                          
-                          </button>
-                          The winner is <span style="color: green;">{{listing.winner}}</span>
+                        <div class="btnandWinner">
+                            <button type="submit" name="watchlist" id="watchlist-btn" class="watchlist-btn">
+                                <span id="watchlist-status">
+                                    <span style="color: green;">Listing Closed!</span>                          
+                              </button>
+                            <div class="winner">   The winner is <span style="color: green;">{{listing.winner}}</span></div>
+                           
+                        </div>
+            
+                         
+                          
                       
                     {% endif %}
 

@@ -15,19 +15,28 @@
                     <div class="col-md-8">
                         <h4>Description:</h4>
                         <p>{{ listing.description }}</p>
+                        <bold>Starting bid: ${{ listing.starting_bid|floatformat:2 }}</bold>
+                        {% if listing.active %}
+                        <p>{{ num_bids }}
+                            bids so far.</p>
+                            <h2>Details</h2>
+                            <ul>
+                                <p>Listed by:
+                                    {{ listing.created_by }}</p>
+                                <p>Category:
+                                    {{ listing.category }}</p>
+                            </ul>
                     </div>
 
                     <div class="col-md-4">
-                        <bold>Starting bid: ${{ listing.starting_bid|floatformat:2 }}</bold>
-                        <p>{{ num_bids }}
-                            bids so far.</p>
+                        
                         {% if watchListmode %}
 
                             {% if mybidStatus %}
                                 <h1>
-                                    Already placed bid at ${{ bid.bid }}.</h1>
+                                    Already placed bid at <span style="color:green">${{ bid.bid }}</span></h1>
 
-                                <form method="post">
+                                <form  class="formClass" method="post">
                                     {% csrf_token %}
                                     {{ bid_form.as_p }}
                                     <input type="submit" value="Edit Bid"/>
@@ -42,7 +51,7 @@
                                 </form>
 
                             {% else %}
-                                <form method="post">
+                                <form class="formClass" method="post">
                                     {% csrf_token %}
                                     {{ bid_form.as_p }}
                                     {% if messages %}
@@ -60,16 +69,14 @@
 
                             {% endif %}
                         {% endif %}
-
+                        {% else %}
+                        <h1><span style="color:red">Listing Closed!</span></h1>
+                        
+                        {% endif %}
+                        
 
                         <div>
-                            <h2>Details</h2>
-                            <ul>
-                                <p>Listed by:
-                                    {{ listing.created_by }}</p>
-                                <p>Category:
-                                    {{ listing.category }}</p>
-                            </ul>
+                            
                         </div>
 
 

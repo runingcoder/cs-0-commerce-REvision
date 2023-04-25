@@ -271,8 +271,11 @@ def closedListings(request, listing_id):
     listing.active = False
     listing.save()
     listing = AuctionListing.objects.get(id=listing_id)
-
     # get the highest bid for the listing
+    if not Bid.objects.filter(listing=listing).exists():
+        listing.winner_id = None
+        listing.save()
+        return HttpResponseRedirect(reverse("myListings"))
     highest_bid = Bid.objects.filter(listing=listing).aggregate(Max('bid'))['bid__max']
     print(highest_bid)
     # get the user(s) with the highest bid
