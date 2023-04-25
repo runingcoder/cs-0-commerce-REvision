@@ -20,7 +20,7 @@
             </div>
             <div class ="rightSide">
                 <div class="listing-title">
-                    <a href="#">{{ listing.title }}</a>
+                    <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a>
                 </div>
                 <div class="listing-price">
                     <span style="font-weight: 600; font-size: 16px; font-family: Arial, sans-serif;">Price: $</span>

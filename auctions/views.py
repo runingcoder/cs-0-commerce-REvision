@@ -1,10 +1,15 @@
+from tkinter.messagebox import Message
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from .models import AuctionListing, Category, User, WatchList
+from .models import AuctionListing, Bid, Category, User, WatchList
+from .forms import BidForm
+
 
 
 
@@ -63,13 +68,14 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-
+@login_required(login_url='login')
 def watchlist(request):
     watchlistofUser = WatchList.objects.filter(user=request.user)
     watchlist_listings = [item.listing for item in watchlistofUser]
     context = {"listings": watchlist_listings,  "categoryMode": False}
     return render(request, "auctions/watchlist.html", context)
 
+@login_required(login_url='login')
 def CategoryList(request, category):
     categoryName = category
     category = Category.objects.get(name=categoryName)
@@ -77,6 +83,7 @@ def CategoryList(request, category):
     context = {"listings": watchlistofCategory, "categoryMode": True, "categoryName": categoryName}
     return render(request, "auctions/watchlist.html", context)
 
+@login_required(login_url='login')
 def createListing(request):
 
     if request.method == "POST":
@@ -112,6 +119,8 @@ def createListing(request):
             "users": users,
         }
         return render(request, "auctions/createListing.html", context)
+    
+@login_required(login_url='login')    
 def categories(request):
     categories = Category.objects.all()
     categories_listings = []
@@ -138,11 +147,7 @@ def index(request):
     return render(request, "auctions/index.html", context)
 
 
-def listingPage(request, listing_id):
-    listing = AuctionListing.objects.get(id=listing_id)
-    context = {"listing": listing}
-    return render(request, "auctions/listingPage.html", context)
-
+@login_required(login_url='login')
 def addToWatchlist(request, listing_id):
     if request.method == "POST":
         listing = AuctionListing.objects.get(id=listing_id)
@@ -163,6 +168,8 @@ def addToWatchlist(request, listing_id):
                 {"message": "Something went wrong, please try again."},
             )
     return HttpResponseRedirect(reverse("index"))
+
+@login_required(login_url='login')
 def removeFromWatchlist(request, listing_id):
     if request.method == "POST":
         listing = AuctionListing.objects.get(id=listing_id)
@@ -177,3 +184,41 @@ def removeFromWatchlist(request, listing_id):
                 {"message": "Something went wrong, please try again."},
             )
     return HttpResponseRedirect(reverse("watchlist"))
+
+
+@login_required(login_url='login')
+def listingPage(request, listing_id):    
+    listing = AuctionListing.objects.get(id=listing_id)
+    num_bids = Bid.objects.filter(listing=listing).count()
+    current_bid = listing.starting_bid
+    bid_form = BidForm(request.POST or None)
+    mybidStatus = Bid.objects.filter(user=request.user, listing=listing).exists()
+    if mybidStatus:
+        bid = Bid.objects.get(user=request.user, listing=listing) 
+    else:
+        bid = None
+
+  
+    if request.method == "POST":
+        if bid_form.is_valid():
+            if Bid.objects.filter(user=request.user, listing=listing).exists():
+               Bid.objects.filter(user=request.user, listing=listing).delete()
+            bid = bid_form.save(commit=False)
+            bid.user = request.user
+            bid.listing = listing
+            if bid.bid > current_bid:
+                bid.save()
+                return redirect('listing', listing.id)
+            else:
+                Message.error(request, "Bid must be higher than current bid.")
+                return redirect('listing', listing.id)
+
+        return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
+    context = {"listing": listing,  "num_bids": num_bids, "bid_form": bid_form, "mybidStatus": mybidStatus, "bid": bid}
+    return render(request, "auctions/listingPage.html", context)
+
+def mybids(request):
+    bids = Bid.objects.filter(user=request.user)
+    context = {"bids": bids}
+    
+    return render(request, "auctions/bids.html", context)
