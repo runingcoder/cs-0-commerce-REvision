@@ -35,7 +35,7 @@
                             {% else %}
                                 <span style="color: red; font-size: xx-large;">I lost this.</span>
                             {% endif %}
-                            {% else %}
+                            {% else %}  
                             <form action="{% url 'removefromWachList' listing.id %}" method="post">
                                 {% csrf_token %}
                                 <button type="submit" name="watchlist" id="watchlist-btn" class="watchlist-btn">

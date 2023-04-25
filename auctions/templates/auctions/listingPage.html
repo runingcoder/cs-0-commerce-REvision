@@ -31,9 +31,14 @@
                                     {% csrf_token %}
                                     {{ bid_form.as_p }}
                                     <input type="submit" value="Edit Bid"/>
-                                    {% if bid_form.errors %}
-                                        <div class="error">{{ bid_form.errors }}</div>
-                                    {% endif %}
+                                    {% if messages %}
+                                    {% for message in messages %}
+                                      <div class="custom-alert {% if message.tags %}{{ message.tags }}{% endif %}" role="alert">
+                                        {{ message }}
+                                      </div>
+                                    {% endfor %}
+                                  {% endif %}
+                                  
                                 </form>
 
                             {% else %}
@@ -42,11 +47,13 @@
                                     {{ bid_form.as_p }}
                                     {% if messages %}
                                     {% for message in messages %}
-                                      <div class="{% if message.tags %}alert alert-{{ message.tags }}{% endif %}" role="alert">
+                                      <div class="custom-alert {% if message.tags %}{{ message.tags }}{% endif %}" role="alert">
                                         {{ message }}
                                       </div>
                                     {% endfor %}
                                   {% endif %}
+                                  
+                                  
                                     <input type="submit" value="Place Bid"/>
                                
                                 </form>

@@ -13,7 +13,7 @@ from django.db.models import Q
 
 
 from .models import *
-from .forms import BidForm
+from .forms import BidForm, CommentForm
 
 
 def login_view(request):
@@ -199,6 +199,7 @@ def listingPage(request, listing_id, watchListmode="False"):
 
     listing = AuctionListing.objects.get(id=listing_id)
     comments = Comment.objects.filter(listing=listing)
+    comment_form = CommentForm(request.POST or None)
     num_bids = Bid.objects.filter(listing=listing).count()
     current_bid = listing.starting_bid
     bid_form = BidForm(request.POST or None)
@@ -210,20 +211,27 @@ def listingPage(request, listing_id, watchListmode="False"):
 
     if request.method == "POST":
         if bid_form.is_valid():
-            if Bid.objects.filter(user=request.user, listing=listing).exists():
-                Bid.objects.filter(user=request.user, listing=listing).delete()
+           
             bid = bid_form.save(commit=False)
             bid.user = request.user
             bid.listing = listing
             if bid.bid >= current_bid:
+                if Bid.objects.filter(user=request.user, listing=listing).exists():
+                     Bid.objects.filter(user=request.user, listing=listing).delete()
                 bid.save()
                 messages.success(request, 'Your bid has been submitted')
-                return redirect("listing", listing.id)
+                return redirect("listing", listing.id,'True')
             else:
                 messages.error(request, f'Bid must be higher than the current bid of {current_bid}')
-
+                return redirect("listing", listing.id,'True')
                 
                
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.user = request.user
+            comment.listing = listing
+            comment.save()
+            return redirect("listing", listing.id,'True')
 
 
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
@@ -232,6 +240,8 @@ def listingPage(request, listing_id, watchListmode="False"):
     else:
         watchListmode = False
     context = {
+        "comment_form": comment_form,
+        "comments": comments,
         "listing": listing,
         "num_bids": num_bids,
         "bid_form": bid_form,
