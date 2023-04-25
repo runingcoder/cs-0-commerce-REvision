@@ -12,9 +12,12 @@ urlpatterns = [
     path('categories', views.categories, name='categories'),
     path('categories/<str:category>', views.CategoryList, name='categoryList'),
     path('listing/<int:listing_id>', views.listingPage, name='listing'),
+    path('listing/<int:listing_id>/<str:watchListmode>/', views.listingPage, name='listing'),
+
     path('addtoWachList/<int:listing_id>', views.addToWatchlist, name='addtoWachList'),
     path('removefromWachList/<int:listing_id>', views.removeFromWatchlist, name='removefromWachList'),
     path('mybids', views.mybids, name='mybids'),
+    path('myListings', views.myListings, name='myListings'),
 
 
 ]

@@ -37,5 +37,13 @@ class Bid(models.Model):
     bid = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"{self.user} - {self.listing} - {self.bid}"    
+        return f"{self.user} - {self.listing} - {self.bid}"   
+    
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment")
+    listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="comment")
+    comment = models.TextField()
+
+    def __str__(self):
+        return f"{self.user} - {self.listing}"    
     

@@ -4,7 +4,7 @@
     <h2>My Bids</h2>
     <ul class ='bidsView'>
         {% for bid in bids %}
-        <li><a href="{% url 'listing' bid.listing.id %}">{{ bid.listing.title }}</a></li>
+        <li><a  style="font-weight: 600; font-size: 26px;" href="{% url 'listing' bid.listing.id %}">{{ bid.listing.title }}</a></li>
         <h3>Starting Price: ${{bid.listing.starting_bid}}</h3>
         <h3>My bid: ${{bid.bid}}</h3>
       

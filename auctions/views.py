@@ -11,9 +11,6 @@ from .models import AuctionListing, Bid, Category, User, WatchList
 from .forms import BidForm
 
 
-
-
-
 def login_view(request):
     if request.method == "POST":
         # Attempt to sign user in
@@ -68,24 +65,26 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def watchlist(request):
     watchlistofUser = WatchList.objects.filter(user=request.user)
     watchlist_listings = [item.listing for item in watchlistofUser]
-    context = {"listings": watchlist_listings,  "categoryMode": False}
+    context = {"listings": watchlist_listings}
     return render(request, "auctions/watchlist.html", context)
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def CategoryList(request, category):
     categoryName = category
     category = Category.objects.get(name=categoryName)
     watchlistofCategory = AuctionListing.objects.filter(category_id=category.id)
-    context = {"listings": watchlistofCategory, "categoryMode": True, "categoryName": categoryName}
-    return render(request, "auctions/watchlist.html", context)
+    context = {"listings": watchlistofCategory, "categoryName": categoryName}
+    return render(request, "auctions/categoryList.html", context)
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def createListing(request):
-
     if request.method == "POST":
         title = request.POST["title"]
         description = request.POST["description"]
@@ -119,66 +118,69 @@ def createListing(request):
             "users": users,
         }
         return render(request, "auctions/createListing.html", context)
-    
-@login_required(login_url='login')    
+
+
+@login_required(login_url="login")
 def categories(request):
     categories = Category.objects.all()
     categories_listings = []
 
     for category in categories:
         listings = category.category.all()
-        categories_listings.append({'category': category, 'listings': listings})
+        categories_listings.append({"category": category, "listings": listings})
 
-    context = {'categories_listings': categories_listings}
-   
+    context = {"categories_listings": categories_listings}
 
-    return render(request, 'auctions/categories.html', context)
+    return render(request, "auctions/categories.html", context)
+
 
 def index(request):
-    listings = AuctionListing.objects.all()
+    # listings whose created_by is not the current user
+    listings = AuctionListing.objects.exclude(created_by=request.user.id)
     watchlist_listings = []
     if request.user.is_authenticated:
         for listing in listings:
             if WatchList.objects.filter(user=request.user, listing=listing).exists():
                 watchlist_listings.append(listing)
-        print(watchlist_listings)        
+        print(watchlist_listings)
 
     context = {"listings": listings, "watchlist_listings": watchlist_listings}
     return render(request, "auctions/index.html", context)
 
 
-@login_required(login_url='login')
+@login_required(login_url="login")
 def addToWatchlist(request, listing_id):
     if request.method == "POST":
         listing = AuctionListing.objects.get(id=listing_id)
-        user = request.user 
+        user = request.user
         try:
             if WatchList.objects.filter(user=user, listing=listing).exists():
                 WatchList.objects.filter(user=user, listing=listing).delete()
-            else:    
+            else:
                 watchlist = WatchList.objects.create(
                     user=user,
                     listing=listing,
                 )
                 watchlist.save()
         except IntegrityError:
-            return render(  
+            return render(
                 request,
                 "auctions/listingPage.html",
                 {"message": "Something went wrong, please try again."},
             )
     return HttpResponseRedirect(reverse("index"))
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def removeFromWatchlist(request, listing_id):
     if request.method == "POST":
         listing = AuctionListing.objects.get(id=listing_id)
-        user = request.user 
+        user = request.user
         try:
             if WatchList.objects.filter(user=user, listing=listing).exists():
                 WatchList.objects.filter(user=user, listing=listing).delete()
         except IntegrityError:
-            return render(  
+            return render(
                 request,
                 "auctions/listingPage.html",
                 {"message": "Something went wrong, please try again."},
@@ -186,39 +188,58 @@ def removeFromWatchlist(request, listing_id):
     return HttpResponseRedirect(reverse("watchlist"))
 
 
-@login_required(login_url='login')
-def listingPage(request, listing_id):    
+@login_required(login_url="login")
+def listingPage(request, listing_id, watchListmode="False"):
     listing = AuctionListing.objects.get(id=listing_id)
     num_bids = Bid.objects.filter(listing=listing).count()
     current_bid = listing.starting_bid
     bid_form = BidForm(request.POST or None)
     mybidStatus = Bid.objects.filter(user=request.user, listing=listing).exists()
     if mybidStatus:
-        bid = Bid.objects.get(user=request.user, listing=listing) 
+        bid = Bid.objects.get(user=request.user, listing=listing)
     else:
         bid = None
 
-  
     if request.method == "POST":
         if bid_form.is_valid():
             if Bid.objects.filter(user=request.user, listing=listing).exists():
-               Bid.objects.filter(user=request.user, listing=listing).delete()
+                Bid.objects.filter(user=request.user, listing=listing).delete()
             bid = bid_form.save(commit=False)
             bid.user = request.user
             bid.listing = listing
             if bid.bid > current_bid:
                 bid.save()
-                return redirect('listing', listing.id)
+                return redirect("listing", listing.id)
             else:
                 Message.error(request, "Bid must be higher than current bid.")
-                return redirect('listing', listing.id)
+                return redirect("listing", listing.id)
 
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
-    context = {"listing": listing,  "num_bids": num_bids, "bid_form": bid_form, "mybidStatus": mybidStatus, "bid": bid}
+    if watchListmode == 'True':
+        watchListmode = True
+    else:
+        watchListmode = False
+    context = {
+        "listing": listing,
+        "num_bids": num_bids,
+        "bid_form": bid_form,
+        "watchListmode": watchListmode,
+        "mybidStatus": mybidStatus,
+        "bid": bid,
+    }
     return render(request, "auctions/listingPage.html", context)
 
+
+@login_required(login_url="login")
 def mybids(request):
     bids = Bid.objects.filter(user=request.user)
     context = {"bids": bids}
-    
+
     return render(request, "auctions/bids.html", context)
+
+
+@login_required(login_url="login")
+def myListings(request):
+    listings = AuctionListing.objects.filter(created_by=request.user)
+    context = {"listings": listings}
+    return render(request, "auctions/mylistings.html", context)

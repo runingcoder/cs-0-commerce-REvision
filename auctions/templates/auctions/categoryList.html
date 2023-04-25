@@ -5,8 +5,6 @@
 
 {% block body %}
 
-
-
     {% for listing in listings %}
         <div class="listing" >
             <div class="listing-image">
@@ -14,7 +12,8 @@
             </div>
             <div class ="rightSide">
                 <div class="listing-title">
-                    <a href="{% url 'listing' listing.id 'True' %}">{{ listing.title }}</a>
+                    <a href="{% url 'listing' listing.id  %}">{{ listing.title }}</a>
+
                 </div>
                 <div class="listing-price">
                     <span style="font-weight: 600; font-size: 16px; font-family: Arial, sans-serif;">Price: $</span>
@@ -26,14 +25,7 @@
                 <div class="listing-category">
                     <span style="font-weight: 600; font-size: 16px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; ">Category: </span>
                     <span style="color: rgb(87, 101, 228);">{{ listing.category }}</span>
-                    <form action="{% url    'removefromWachList' listing.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" name="watchlist" id="watchlist-btn" class="watchlist-btn">
-                          <span id="watchlist-status">
-                            <span style="color: red;">Remove from watchlist</span>
-                        
-                        </button>
-                      </form>
+                   
                 </div>
             </div>
         

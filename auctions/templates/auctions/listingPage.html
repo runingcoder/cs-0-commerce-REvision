@@ -21,7 +21,9 @@
             <div class="col-md-4">
                 <bold>Starting bid: ${{ listing.starting_bid|floatformat:2 }}</bold>
                 <p>{{ num_bids }} bids so far.</p>
-                {% if mybidStatus %}
+                {% if watchListmode %}
+
+                {% if mybidStatus  %}
                 <h1>        Already placed bid at ${{bid.bid}}.</h1>
                      
                      <form method="post">
@@ -38,6 +40,8 @@
                     </form>
                      
                      {% endif %}
+                {% endif %}
+                
      
           
              
