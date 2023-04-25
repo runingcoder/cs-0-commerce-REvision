@@ -28,3 +28,12 @@ Commerce is a Django web application that allows users to create and bid on auct
 ![Active Listing Page](images/active_listing.png)
 ![Listing Page](images/listing_page.png)
 
+
+📝 Credits
+
+This project was created by Achyut Kayastha (https://github.com/runingcoder).
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
