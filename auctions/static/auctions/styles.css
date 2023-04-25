@@ -2,10 +2,11 @@
     color: purple;
 }
 .navbar {
+    margin:0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #8b4848;
+    background-color: #1c1e1f;
     color: white;
     padding: 10px;
 }
@@ -37,10 +38,11 @@
 .nav-link {
     color: white;
 }
-body{
+main {
     margin: 30px;
     padding: 20px;
 }
+
 .status{
     text-align: center;
 }
@@ -97,7 +99,7 @@ color: black;
 text-decoration: none;
 }
 .nav a:hover{
-    color: black;
+    color: #dcdcdc;
 }
 a:hover {
 text-decoration: underline;
@@ -236,4 +238,6 @@ margin-top: 2em;
         margin-left: 20px;
         margin-top: 20px;
     }
-  
+  h3{
+    text-align: center;
+  }

@@ -5,8 +5,8 @@
     <ul class ='bidsView'>
         {% for bid in bids %}
         <li><a  style="font-weight: 600; font-size: 26px;" href="{% url 'listing' bid.listing.id %}">{{ bid.listing.title }}</a></li>
-        <h3>Starting Price: ${{bid.listing.starting_bid}}</h3>
-        <h3>My bid: ${{bid.bid}}</h3>
+        <h4>Starting Price: ${{bid.listing.starting_bid}}</h4>
+        <h4>My bid: ${{bid.bid}}</h4>
         {% if bid.listing.winner %}
         {% if bid.listing.winner.id == user.id %}
             <span style="color: blue; font-size: xx-large;">I won this!</span>
