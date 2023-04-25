@@ -2,60 +2,91 @@
 
 {% block body %}
 
-{% if message %}
-<div>{{ message }}</div>
-{% endif %}
-    <h1>Listing:
-        {{ listing.title }}</h1>
+ 
+    <div class="container">
 
-    <img src="{{ listing.image }}" alt="{{ listing.title }}" width="500">
+        <div class="left">
+            <h1>Listing:
+                {{ listing.title }}</h1>
 
-        <div class="wrapper">
-            <div class="col-md-8">
-                <h4>Description:</h4>
-                <p>{{ listing.description }}</p>
-                <h4>Bid description:</h4>
+            <img src="{{ listing.image }}" alt="{{ listing.title }}" width="500">
 
+                <div class="wrapper">
+                    <div class="col-md-8">
+                        <h4>Description:</h4>
+                        <p>{{ listing.description }}</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <bold>Starting bid: ${{ listing.starting_bid|floatformat:2 }}</bold>
+                        <p>{{ num_bids }}
+                            bids so far.</p>
+                        {% if watchListmode %}
+
+                            {% if mybidStatus %}
+                                <h1>
+                                    Already placed bid at ${{ bid.bid }}.</h1>
+
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ bid_form.as_p }}
+                                    <input type="submit" value="Edit Bid"/>
+                                    {% if bid_form.errors %}
+                                        <div class="error">{{ bid_form.errors }}</div>
+                                    {% endif %}
+                                </form>
+
+                            {% else %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    {{ bid_form.as_p }}
+                                    {% if messages %}
+                                    {% for message in messages %}
+                                      <div class="{% if message.tags %}alert alert-{{ message.tags }}{% endif %}" role="alert">
+                                        {{ message }}
+                                      </div>
+                                    {% endfor %}
+                                  {% endif %}
+                                    <input type="submit" value="Place Bid"/>
+                               
+                                </form>
+
+                            {% endif %}
+                        {% endif %}
+
+
+                        <div>
+                            <h2>Details</h2>
+                            <ul>
+                                <p>Listed by:
+                                    {{ listing.created_by }}</p>
+                                <p>Category:
+                                    {{ listing.category }}</p>
+                            </ul>
+                        </div>
+
+
+                    </div>
+                </div>
             </div>
-
-            <div class="col-md-4">
-                <bold>Starting bid: ${{ listing.starting_bid|floatformat:2 }}</bold>
-                <p>{{ num_bids }} bids so far.</p>
-                {% if watchListmode %}
-
-                {% if mybidStatus  %}
-                <h1>        Already placed bid at ${{bid.bid}}.</h1>
-                     
-                     <form method="post">
-                         {% csrf_token %}
-                         {{ bid_form.as_p }}
-                         <input type="submit" value="Edit Bid"/>
-                     </form>
-
-                     {% else %}
-                     <form method="post">
-                        {% csrf_token %}
-                        {{ bid_form.as_p }}
-                        <input type="submit" value="Place Bid"/>
-                    </form>
-                     
-                     {% endif %}
-                {% endif %}
-                
-     
-          
-             
-                <br></div>
-                <div>
-                    <h2>Details</h2>
-                    <ul>
-                        <p>Listed by:
-                            {{ listing.created_by }}</p>
-                        <p>Category:
-                            {{ listing.category }}</p>
-                    </ul>
+            <div class="right">
+                <h2>Comments</h2>
+                <ul class="comment-list">
+                    {% for comment in comments %}
+                        <li class="comment">
+                            <div class="comment-author">{{ comment.user.username }}</div>
+                            <div class="comment-content">{{ comment.comment }}</div>
+                        </li>
+                        {% empty %}
+                        <li>No comments yet.</li>
+                    {% endfor %}
+                </ul>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <input type="submit" value="Add Comment"></form>
                 </div>
 
-
             </div>
+
         {% endblock %}

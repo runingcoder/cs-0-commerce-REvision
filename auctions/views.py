@@ -3,11 +3,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.db.models import Max
+from django.db.models import Q
 
-from .models import AuctionListing, Bid, Category, User, WatchList
+
+
+
+from .models import *
 from .forms import BidForm
 
 
@@ -69,6 +74,7 @@ def register(request):
 @login_required(login_url="login")
 def watchlist(request):
     watchlistofUser = WatchList.objects.filter(user=request.user)
+    print(watchlistofUser)
     watchlist_listings = [item.listing for item in watchlistofUser]
     context = {"listings": watchlist_listings}
     return render(request, "auctions/watchlist.html", context)
@@ -136,7 +142,7 @@ def categories(request):
 
 def index(request):
     # listings whose created_by is not the current user
-    listings = AuctionListing.objects.exclude(created_by=request.user.id)
+    listings = AuctionListing.objects.exclude(Q(created_by=request.user.id) | Q(active=False))
     watchlist_listings = []
     if request.user.is_authenticated:
         for listing in listings:
@@ -190,7 +196,9 @@ def removeFromWatchlist(request, listing_id):
 
 @login_required(login_url="login")
 def listingPage(request, listing_id, watchListmode="False"):
+
     listing = AuctionListing.objects.get(id=listing_id)
+    comments = Comment.objects.filter(listing=listing)
     num_bids = Bid.objects.filter(listing=listing).count()
     current_bid = listing.starting_bid
     bid_form = BidForm(request.POST or None)
@@ -207,12 +215,16 @@ def listingPage(request, listing_id, watchListmode="False"):
             bid = bid_form.save(commit=False)
             bid.user = request.user
             bid.listing = listing
-            if bid.bid > current_bid:
+            if bid.bid >= current_bid:
                 bid.save()
+                messages.success(request, 'Your bid has been submitted')
                 return redirect("listing", listing.id)
             else:
-                Message.error(request, "Bid must be higher than current bid.")
-                return redirect("listing", listing.id)
+                messages.error(request, f'Bid must be higher than the current bid of {current_bid}')
+
+                
+               
+
 
         return HttpResponseRedirect(reverse("listing", args=(listing.id,)))
     if watchListmode == 'True':
@@ -243,3 +255,21 @@ def myListings(request):
     listings = AuctionListing.objects.filter(created_by=request.user)
     context = {"listings": listings}
     return render(request, "auctions/mylistings.html", context)
+
+def closedListings(request, listing_id):
+    listing = AuctionListing.objects.get(id=listing_id)
+    listing.active = False
+    listing.save()
+    listing = AuctionListing.objects.get(id=listing_id)
+
+    # get the highest bid for the listing
+    highest_bid = Bid.objects.filter(listing=listing).aggregate(Max('bid'))['bid__max']
+    print(highest_bid)
+    # get the user(s) with the highest bid
+    winners = Bid.objects.filter(listing=listing, bid=highest_bid).values_list('user', flat=True)
+    print(winners[0])
+    # set the winner field on the listing to the user with the highest bid (assuming there is only one winner)
+    listing.winner_id = winners[0]
+    listing.save()
+    
+    return HttpResponseRedirect(reverse("myListings"))

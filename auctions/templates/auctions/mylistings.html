@@ -1,48 +1,62 @@
-
 {% extends "auctions/layout.html" %}
 {% load static %}
-
 
 
 {% block body %}
     <h2>My Listings</h2>
 
     {% for listing in listings %}
-    
-    <div class="listing" >
-        <div class="listing-image">
-            <img class = 'imageClass' src="{{ listing.image }}" alt="Image of {{ listing.title }}">
-        </div>
-        <div class ="rightSide">
-            <div class="listing-title">
-                <a href="{% url 'listing' listing.id  %}">{{ listing.title }}</a>
-              
-            </div>
-            <div class="listing-price">
-                <span style="font-weight: 600; font-size: 16px; font-family: Arial, sans-serif;">Price: $</span>
-            {{ listing.starting_bid }}
-            </div>
-            <div class="listing-description">
-                <span style="font-weight: 600; font-size: 22px;"> {{ listing.description }}</span>
-            </div>  
-            
-                <div class="listing-category">
-                    <span style="font-weight: 600; font-size: 16px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; ">Category: </span>
-                    <span style="color: rgb(92, 95, 122);">{{ listing.category }}</span>
 
+        <div class="listing">
+            <div class="listing-image">
+                <img class='imageClass' src="{{ listing.image }}" alt="Image of {{ listing.title }}"></div>
+                <div class="rightSide">
+                    <div class="listing-title">
+                        <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a>
+
+                    </div>
+                    <div class="listing-price">
+                        <span style="font-weight: 600; font-size: 16px; font-family: Arial, sans-serif;">Price: $</span>
+                        {{ listing.starting_bid }}
+                    </div>
+                    <div class="listing-description">
+                        <span style="font-weight: 600; font-size: 22px;">
+                            {{ listing.description }}</span>
+                    </div>
+
+                    <div class="listing-category">
+                        <span style="font-weight: 600; font-size: 16px; font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; ">Category:
+                        </span>
+                        <span style="color: rgb(92, 95, 122);">{{ listing.category }}</span>
+                     
+                   
+
+
+                    </div>
+                   
+                    {% if listing.active %}
+                    <form action="{% url    'closeListing' listing.id %}" method="post">
+                        {% csrf_token %}
+                    <button type="submit" name="watchlist" id="watchlist-btn" class="watchlist-btn">
+                        <span id="watchlist-status">
+                          <span style="color: red;">Close Listing!</span>
                       
+                      </button>
+                      </form>   
+                        {% else %}
+                        <button type="submit" name="watchlist" id="watchlist-btn" class="watchlist-btn">
+                            <span id="watchlist-status">
+                                <span style="color: green;">Listing Closed!</span>                          
+                          </button>
+                          The winner is <span style="color: green;">{{listing.winner}}</span>
+                      
+                    {% endif %}
+
                 </div>
-               
-    </div>
-
-    
-       
-     
 
 
-</div>
-{% endfor %}
-   
+            </div>
+        {% endfor %}
 
-    
-{% endblock %}  
+
+    {% endblock %}
