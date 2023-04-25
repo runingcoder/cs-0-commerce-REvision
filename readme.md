@@ -26,13 +26,13 @@ Commerce is a Django web application that allows users to create and bid on auct
 
 ## Screenshots
 
-##Active Listing Page
+-Active Listing Page
 
-<img src = "images/active_listing.png" width = "200" height = '180'>
+<img src = "images/active_listing.png" width = "800" height = '600'>
 
-##Listing Page
+-Listing Page
 
-<img src = "images/listing_page.png" width = "200" height = '180'>
+<img src = "images/listing_page.png" width = "800" height = '600'>
 
 
 📝 Credits
